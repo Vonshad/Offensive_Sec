@@ -1,2 +1,3 @@
-[Kernel exploits]
-Get kernel version: uname -a
+[KERNEL VERSION]
+    Get kernel version: uname -a
+    
