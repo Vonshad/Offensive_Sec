@@ -132,6 +132,4 @@ If a shortcut is being used, we abuse the `$PATH` and "hijack" it. In order to d
 
 ## [CAPABILITIES]
 
-### *Hunt Capabilities*
-
     getcap -r / 2>/dev/null
