@@ -1,7 +1,5 @@
 # Linux Privilege Escalation checks
 
-## [KERNEL VERSION]
+## [GET KERNEL VERSION]
 
-Get kernel version
 >uname -a
-
