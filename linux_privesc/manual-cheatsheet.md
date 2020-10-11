@@ -77,13 +77,11 @@ void _init() {
 2. If the sudo version is below 1.8.28, use this command to run as root: `sudo -u#-1 <COMMAND>`
 
 #### *Abusing CVE-2019-18634 (sudo version <1.8.26)*
-[Exploit for CVE-2019-18634](https://github.com/saleemrashid/sudo-cve-2019-18634) 
+[Exploit for CVE-2019-18634](https://github.com/saleemrashid/sudo-cve-2019-18634). Works if `pw feedback` is present.
 
 1. Check sudo version: `sudo -V`
 
-2. If the sudo version is below 1.8.26, check if `pwfeedback` is present.
-
-3. Run the exploit.
+2. Run the exploit.
 
 ## **SUID**
 
