@@ -3,4 +3,5 @@
 ## [KERNEL VERSION]
 
 Get kernel version
-uname -a
+>uname -a
+
