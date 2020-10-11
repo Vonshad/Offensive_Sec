@@ -132,4 +132,6 @@ If a shortcut is being used, we abuse the `$PATH` and "hijack" it. In order to d
 
 ## [CAPABILITIES]
 
+*Abuse capabilities to get higher privileges*
+
     getcap -r / 2>/dev/null
