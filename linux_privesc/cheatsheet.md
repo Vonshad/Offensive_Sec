@@ -1,4 +1,6 @@
-#__Linux Privilege Escalation checks__
-##_[KERNEL VERSION]_
+#Linux Privilege Escalation checks
+
+##[KERNEL VERSION]
+
 Get kernel version
 uname -a
