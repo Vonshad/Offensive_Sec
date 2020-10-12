@@ -4,16 +4,36 @@
 
 *Anything system related.*
 
-### *Kernel Exploits*
+### *Kernel Version*
 
 *An outdated kernel version may lead to easy wins.*
 
     uname -a
+    cat /proc/version
+    cat /etc/issue
+
+### *Finding the architecture*
+
+*Knowing the architecture may come in handy if we find an exploit that requires technical specifications.*
+
+    lscpu
 
 ### *Finding Running services*
 
     ps aux
     ps aux | grep root
+
+## Network Enumeration
+
+*Understand our IP achitecture and what we are interacting with*
+
+    ifconfig
+    ip a
+    arp -a
+
+*Identify what ports are open as well as what communications exist -- Are there ports open only internally that we are curious about?* 
+
+    netstat -ano
 
 ## **[PASSWORDS AND FILE PERMISSIONS]**
 
