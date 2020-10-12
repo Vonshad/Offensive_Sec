@@ -230,7 +230,7 @@ Hunt for folders
 
     cat /etc/export
 
-Let's take the example of a `/tmp` directory with the `no_root_squash` attribute present.
+Let's take the example of a `/tmp` directory with the `no_root_squash` option present.
 
     /tmp *(rw,sync,insecure,no_root_squash,no_subtree_check)
 
