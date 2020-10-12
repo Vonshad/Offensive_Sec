@@ -230,7 +230,7 @@ Hunt for folders
 
     cat /etc/export
 
-We will take the example of a `/tmp` directory with the *no_root_squash* attribute present.
+Let's take the example of a `/tmp` directory with the `no_root_squash` attribute present.
 
 > **Host machine**
  
@@ -248,7 +248,7 @@ chmod +s <PATH TO FILE>/x
  
 > **Victim machine**
 
-Execute the created file.
+Execute the created file. We will have the same rights as the owner of the mountable `no_root_squash` directory.
 
  ## [DOCKER]
  
