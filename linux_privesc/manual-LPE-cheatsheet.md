@@ -44,9 +44,9 @@
     history
     cat .bash_history
 
-*We can also attempt to locate the password name being searched. Think outside the box.*
+*We can attempt to locate the password name being used in files/filenames. Think outside the box.*
 
-For mentions of `PASSWORD=`: `grep --color=auto -rnw '/' -ie "PASSWORD=" --color=always 2>/dev/null`
+For mentions of `PASSWORD=` in files: `grep --color=auto -rnw '/' -ie "PASSWORD=" --color=always 2>/dev/null`
 
 For files named `password`: `locate password | more`
 
