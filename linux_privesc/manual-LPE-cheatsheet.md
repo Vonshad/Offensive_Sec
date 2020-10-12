@@ -230,7 +230,7 @@ Hunt for folders
 
     cat /etc/export
 
-We will take the example of a `/tmp` directory with the "no_root_squash* attribute present.
+We will take the example of a `/tmp` directory with the *no_root_squash* attribute present.
 
 > **Host machine**
  
