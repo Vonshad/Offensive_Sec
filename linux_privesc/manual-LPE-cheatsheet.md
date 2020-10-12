@@ -252,6 +252,15 @@ chmod +s <PATH TO FILE>/x
 
 Execute the created file. We will have the same rights as the owner of the mountable `no_root_squash` directory.
 
- ## [DOCKER]
+ ## [GROUPS]
  
- >WIP
+ *Can we exploit group permissions?*
+ 
+    id
+
+This is a different approach and will vary depending on the machine. However, the general concept to take away is to look for unfamiliar groups or groups that are known to give to much power. We can, and should, always use [GTFOBins](https://gtfobins.github.io/) in order to enumerate through these groups. 
+
+This section was created because the LPE course showed a privesc technique using Docker.
+
+
+# Fin
