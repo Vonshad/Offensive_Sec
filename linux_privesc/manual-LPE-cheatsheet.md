@@ -232,6 +232,8 @@ Hunt for folders
 
 Let's take the example of a `/tmp` directory with the `no_root_squash` attribute present.
 
+    /tmp *(rw,sync,insecure,no_root_squash,no_subtree_check)
+
 > **Host machine**
  
 1. Create a directory where you will mount the `/tmp` directory.
