@@ -1,11 +1,19 @@
 # ***Manual Linux Privilege Escalation Checks***
 
-## **[KERNEL EXPLOITS]**
+## System Enumeration
+
+*Anything system related.*
+
+### *Kernel Exploits*
 
 *An outdated kernel version may lead to easy wins.*
 
     uname -a
 
+### *Finding Running services*
+
+    ps aux
+    ps aux | grep root
 
 ## **[PASSWORDS AND FILE PERMISSIONS]**
 
@@ -16,12 +24,21 @@
     history
     cat .bash_history
 
+*We can also attempt to locate the password name being searched. Think outside the box.*
+
+For mentions of `PASSWORD=`: `grep --color=auto -rnw '/' -ie "PASSWORD=" --color=always 2>/dev/null`
+
+For files named `password`: `locate password | more`
+
+>We can attempt these commands with `PASSWORD=` , `passwd`, `password`, etc.
 
 ### *Weak File Permissions*
 
 Look for **read or write** permissions to `/etc/shadow`
 
 Look for **write** permission to `/etc/passwd`
+
+Anything interesting in `/etc/group` ?
 
 
 ### *SSH Keys*
