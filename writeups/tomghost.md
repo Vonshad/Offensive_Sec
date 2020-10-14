@@ -39,7 +39,7 @@ For example, the **/WEB-INF/web.xml** file is the Web Root directory who’s acc
 
 While it is nice to know SSH is enabled, this isn't usually a way in.
 
-## *Step 2 : EXPLOITATION*
+## **Step 2 : EXPLOITATION**
 
 ### *Getting information using GhostCat*
 
@@ -57,7 +57,7 @@ Remember that ssh port? Yeah, let's try putting these credentials in.
 
 BINGO! We are in as user *Skyfuck*.
 
-## *Step 3 : POST-EXPLOITATION*
+## **Step 3 : POST-EXPLOITATION**
 
 ### *Enumerating the Skyfuck user*
 
@@ -121,7 +121,7 @@ Interesting! We see we can sudo the `zip` binary. Using [GTFOBins](https://gtfob
 
 **PWNED! We rooted the machine and found the root flag!**
 
-## *SUMMARY*
+## **SUMMARY**
 
 All in all, this was an easy room but full of very nice elements! My main takeaways from this room are the following: ghostcat, pgp encryption (and decryption), and privesc via a sudo'able binary. 
 
