@@ -15,7 +15,7 @@ Our nmap scan was the following: `nmap -A -T4 -p- -v -oN tomghost_full 10.10.185
 
 ![alt text](https://i.imgur.com/JaQLTK6.png "nmap results")
 
-What seems the most interesting is the combination of **ports 8009 and 8080**.
+What seems to be the most interesting is the combination of **ports 8009 and 8080**.
 
 ### *Port 8080 -- Tomcat webserver*
 
