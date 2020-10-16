@@ -39,7 +39,7 @@ For example, the **/WEB-INF/web.xml** file is the Web Root directory who’s acc
 
 ### *Port 22 -- SSH*
 
-While it is nice to know SSH is enabled, this isn't usually a way in.
+While it is nice to know SSH is enabled, SSH isn't usually a way in initially.
 
 ## **Step 2 : EXPLOITATION**
 
