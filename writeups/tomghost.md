@@ -19,7 +19,9 @@ What seems the most interesting is the combination of **ports 8009 and 8080**.
 
 ### *Port 8080 -- Tomcat webserver*
 
-Traveling to http://tomghost.thm:8080/, we notice webserver is running Apache Tomcat/9.0.30. This is an information that will come in handy later to validate our exploit. Furthermore, we notice that the manager app gives us a 403 - Forbidden, indicating this is not the way in.
+Traveling to http://tomghost.thm:8080/, we notice webserver is running Apache Tomcat/9.0.30. This is an information that will come in handy later to validate our exploit. 
+
+Since the webserver is running the default Apache/Tomcat page, I checked to see if we had access to the manager app. However, we are greeted with a *403 - Forbidden*, indicating this is not the way in.
 
 ### *Port 8009 -- Apache Jserv*
 
