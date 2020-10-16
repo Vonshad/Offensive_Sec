@@ -1,4 +1,4 @@
-# oscp-preparation
+# Cheatsheets & Write-ups
 
 ## [WRITEUPS]
 Write-ups of various OSCP-like boxes will be provided here.
