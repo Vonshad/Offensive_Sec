@@ -19,13 +19,13 @@ What seems to be the most interesting is the combination of **ports 8009 and 808
 
 ### *Port 8080 -- Tomcat webserver*
 
-Traveling to http://tomghost.thm:8080/, we notice webserver is running Apache Tomcat/9.0.30. This is an information that will come in handy later to validate our exploit. 
+Traveling to http://tomghost.thm:8080/, we notice the webserver is running Apache Tomcat/9.0.30. This is an information that will come in handy later to validate our exploit. 
 
-Since the webserver is running the default Apache/Tomcat page, I checked to see if we had access to the manager app. However, we are greeted with a *403 - Forbidden*, indicating this is not the way in.
+Since the webserver is showing the default Apache/Tomcat page, I checked to see if we had access to the manager app in hopes to get in using default credentials. However, we are greeted with a *403 - Forbidden*, indicating this is not the way in.
 
 ### *Port 8009 -- Apache Jserv*
 
-If we google `Apache Jserv (Protocol v1.3) exploit`, we will find the **CVE-2020-1938**[https://nvd.nist.gov/vuln/detail/CVE-2020-1938].
+If we google `Apache Jserv (Protocol v1.3) exploit`, we will find the [**CVE-2020-1938**](https://nvd.nist.gov/vuln/detail/CVE-2020-1938). This website explains the following:
 
 >When using the Apache JServ Protocol (AJP), care must be taken when trusting incoming connections to Apache Tomcat. Tomcat treats AJP connections as having higher trust than, for example, a similar HTTP connection. If such connections are available to an attacker, they can be exploited in ways that may be surprising. In Apache Tomcat 9.0.0.M1 to **9.0.0.30**, 8.5.0 to 8.5.50 and 7.0.0 to 7.0.99, Tomcat shipped with an AJP Connector enabled by default that listened on all configured IP addresses. [[Source]](https://nvd.nist.gov/vuln/detail/CVE-2020-1938)
 
@@ -67,7 +67,7 @@ BINGO! We are in as user *Skyfuck*.
 
 Now, there are a few things I want to point out on this screenshot. First off, we are in as a low privileged user, Skyfuck. Regardless of his dubious choice of username, he is very helpful to us and keeps important files on his home directory : `credential.pgp` and `tryhackme.asc`.
 
-While I could waste a bit of time showing you the results of the enumeration for Skyfuck, the real way in is the one described above.
+While I could waste a bit of time showing you the results of the enumeration for Skyfuck, the intended way in is the one described above.
 
 #### Attempt 1 : Reading the credential.pgp file
 
@@ -79,11 +79,9 @@ Let's try!
 
 Sadly, we need a passphrase and an empty string did not work. No problem, let's work on cracking it!
 
-#### Cracking the tryhackme.asc passphrase
+#### Cracking the tryhackme.asc passphrase using JohnTheRipper
 
-First off, copy the content of the file to your attacker vm. Name this file however you like. I used a very original name for mine: `crackme.asc`.
-
-Next, we'll use JohnTheRipper to crack it.
+First off, copy the content of the file to your attacker vm. Name this file however you like. I used a very original name for mine: `crackme.asc`. Next, we'll use JohnTheRipper to crack it.
 
 1. Let's make our file in a format JTR can read: `gpg2john crackme.asc > crackme.hash`
 
@@ -101,9 +99,9 @@ We can now enter the passphrase and read the `credential.pgp` file.
 
 ![alt text](https://i.imgur.com/OamDYkS.png "Merlin credentials")
 
-We find the merlin credentials! `merlin:asuyusdoiuqoilkda312j31k2j123j1g23g12k3g12kj3gk12jg3k12j3kj123j`
+We find the `merlin` user credentials! `merlin:asuyusdoiuqoilkda312j31k2j123j1g23g12k3g12kj3gk12jg3k12j3kj123j`
 
-### *Enumerating the merlin user*
+### *Enumerating merlin*
 
 First off, we notice merlin has the `user.txt` flag inside his home directory.
 
@@ -111,13 +109,13 @@ First off, we notice merlin has the `user.txt` flag inside his home directory.
 
 In order to get an idea of how to privesc, I will use the [LinPEAS.sh](https://github.com/carlospolop/privilege-escalation-awesome-scripts-suite) script, by carlospolop.
 
-> NOTE: There are a few ways to put the `linpeas.sh` script on the victim machine. I chose the `wget` way. If you are stuck here, I've written a walkthrough at the bottom of the write-up.
+> NOTE: There are a few ways to put the `linpeas.sh` script on the victim machine. I chose the `wget` way. If you are stuck here, I've written the steps taken at the bottom of the write-up.
 
-Of course, I can't show the whole output as it would be too long, so let's focus on the important bit:
+I can't show the whole output of the script as it would be too long, so let's focus on the important bit:
 
 ![alt text](https://i.imgur.com/At2Qf0v.png "Privesc way?")
 
-Interesting! We see we can sudo the `zip` binary. Using [GTFOBins](https://gtfobins.github.io/gtfobins/zip/#sudo), we see a find to privesc.
+Interesting! We see we can sudo the `zip` binary. Using [GTFOBins](https://gtfobins.github.io/gtfobins/zip/#sudo), we find a way to privesc.
 
 ![alt text](https://i.imgur.com/xzirOD4.png "Rooted!")
 
