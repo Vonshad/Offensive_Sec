@@ -5,6 +5,8 @@
 
 *Rating* - **Easy**
 
+*Halloween is coming and the cat is out to haunt you*
+
 ## **Step 1 : SCANNING AND ENUMERATION** 
 
 ### *Nmap Output*  
