@@ -34,7 +34,7 @@ Port 80 is the port we visited during reconnaissance (see step 1). There isn't a
 
 This is where it gets interesting. Port 8080 hosts a Jenkins server (which seems to be in line with the box's theme) and prompts us for login credentials.
 
-![alt text](https://i.imgur.com/GSeLxcT.png "Jenkins Login Page")
+![alt text](https://i.imgur.com/LBVXrWT.png "Jenkins Login Page")
 
 I attempted to use the [default passwords for Jenkins](https://docs.openshift.com/container-platform/3.3/using_images/other_images/jenkins.html), `admin:password`, but it didn't let me in. However, the credentials `admin:admin` worked and we managed to get on the Jenkins admin's dashboard!
 
