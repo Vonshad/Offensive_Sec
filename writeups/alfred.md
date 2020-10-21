@@ -24,7 +24,7 @@ The nmap scan was the following: `nmap -A -T4 -oN alfred_top1000 -v -Pn 10.10.23
 
 The reason why I added the `-Pn` tag was because it is mentioned the machine did not respond to pings (ICMP was disabled). That way, we skipped host discovery and considered all hosts as online.
 
-> Nmap screenshot **TODO
+![alt text](https://i.imgur.com/ddICCwo.png "nmap output")
 
 ### *Port 80 -- HTTP*
 
@@ -34,7 +34,7 @@ Port 80 is the port we visited during reconnaissance (see step 1). There isn't a
 
 This is where it gets interesting. Port 8080 hosts a Jenkins server (which seems to be in line with the box's theme) and prompts us for login credentials.
 
-> Add a screenshot
+![alt text](https://i.imgur.com/GSeLxcT.png "Jenkins Login Page")
 
 I attempted to use the [default passwords for Jenkins](https://docs.openshift.com/container-platform/3.3/using_images/other_images/jenkins.html), `admin:password`, but it didn't let me in. However, the credentials `admin:admin` worked and we managed to get on the Jenkins admin's dashboard!
 
