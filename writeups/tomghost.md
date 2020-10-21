@@ -1,4 +1,4 @@
-# ***tomghost***
+# **tomghost**
 ![alt text](https://i.imgur.com/OyETyLA.png "Tomghost logo")
 
 *Plateform* - [**TryHackMe**](https://tryhackme.com/room/tomghost)
