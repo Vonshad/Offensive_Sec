@@ -3,6 +3,8 @@
 
 *Plateform* - [**TryHackMe**](https://tryhackme.com/room/tomghost)
 
+*OS* - **Linux**
+
 *Rating* - **Easy**
 
 *Halloween is coming and the cat is out to haunt you*
