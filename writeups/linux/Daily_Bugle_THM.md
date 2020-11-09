@@ -22,7 +22,7 @@ Already, this box seems to be giving us great information. While it is important
 
 ## **Step 2 : SCANNING AND ENUMERATION**
 
-During this step, we find that the machine is running a webserver on which a CMS (Joomla! version 3.7.0) is running. We also find the /administrator dashboard (can't log in yet) on the webserver.
+> Here, we find that the machine is running a webserver on which a CMS (Joomla! version 3.7.0) is running. We also find the /administrator dashboard (can't log in yet) on the webserver.
 
 ### *Nmap Output*
 
@@ -82,7 +82,7 @@ Time to start attacking.
 
 ## **Step 3 : EXPLOITATION**
 
-During this step, I used the Joomblah python script and found credentials. Using these credentials, it is possible to access the /administrator folder and, from there, exploit the "preview" feature of templates in order to get a reverse shell.
+> To exploit, I used the Joomblah python script and found credentials. Using these credentials, it is possible to access the /administrator folder and, from there, exploit the "preview" feature of templates in order to get a reverse shell.
 
 ### *Exploiting CVE-2017-8917*
 
@@ -118,18 +118,36 @@ Now, onto finding a way to get a reverse shell.
 
 Now, this process is a bit tricky and took me a while (and a lot of trial/error). Here is the step-by-step:
 
-#### 1. Travel to the "Templates" section
+#### 1. Pre-exploitation
+
+Get a php reverse shell. I personally like [this one from pentest monkey](https://github.com/pentestmonkey/php-reverse-shell). Get the file and edit the LHOST and LPORT and put in your own.
+
+Next, start a netcat listener to your chosen port. `nc -nvlp <LPORT>`
+
+#### 2. Travel to the "Templates" section
 
 ![Picture to illustrate the point](https://i.imgur.com/8lAjdUX.png)
 
-#### 2. Select the Beez3 Template
+#### 3. Select the Beez3 Template
+
+![Picture to illustrate the point](https://i.imgur.com/v7UuDWp.png)
 
 
+#### 4. Edit the index.php file with your php reverse shell code and preview the template to start the reverse shell 
 
+![Steps to get the rev shell](https://i.imgur.com/eKwsouA.png)
+
+Once you click on `Template Preview`, you should get a connection on your netcat listener. As we can see, we are now connected as user `Apache`.
+
+![We are in!](https://i.imgur.com/dyjvavK.png)
+
+**We are in!**
+
+###
 
 ## **Step 4 : POST-EXPLOITATION**
 
-> Rough explanation of what we will do. Do make sure to post a screenshot for every ### step here.
+> In order to gain root access, .
 
 ### *Step 4.1*
 
