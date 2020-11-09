@@ -17,7 +17,7 @@
 
 ![Picture of the index.php](https://i.imgur.com/CUeCFxM.png)
 
-Already, this box seems to be giving us great information. While we took notes of these elements, they won't be of critical importance later on, so I will not be covering them extensively.
+Already, this box seems to be giving us great information. While it is important to take notes of these elements, they won't be of critical importance later on, so I will not be covering them extensively.
 
 
 ## **Step 2 : SCANNING AND ENUMERATION**
@@ -34,7 +34,11 @@ I ran the following command: `nmap -A -T4 -p- -oN <output_name> -v <Target_IP>`.
 
 While it is important to take note that the SSH service is running on the target machine, it usually isn't a way in on its own.
 
-### *80 - HTTP*
+### *Port 3306 - MySQL*
+
+We learn MySQL is running on the target machine. We could potentially learn crucial information using [sqlmap](https://tools.kali.org/vulnerability-analysis/sqlmap), but as it is not allowed on the OSCP exam, I chose to avoid it.
+
+### *Port 80 - HTTP*
 
 This is the webserver we found during *Step 1 - Reconnaissance*. The Nmap results indicated to us it is running the **Joomla!** CMS and has disallowed entries in the **robots.txt** file.
 
@@ -54,17 +58,31 @@ The /administrator folder prompts us to log in. SQL injections won't work here e
 
 ![Picture of the /administrator folder](https://i.imgur.com/n7X9fgt.png)
 
-#### Running dirbuster and finding a Joomla! Version
+#### Running DirBuster to find new elements
 
-After exploring the obvious options, it is time to bust some directories.
+After exploring the obvious options, it is time to bust some directories. At that point, I was mostly trying to find a CMS version in order to find exploits.
 
-### *3306 - MySQL*
+I used the **directory-list-2.3-medium.txt** wordlist and included **.php** and **.txt** files to the search. These were the results:
 
-We learn MySQL is running on the target machine.
+![dirbuster output](https://i.imgur.com/ilabr5a.png)
+
+The only new and interesting element was the **README.txt** file.
+
+#### Reading the README.txt file
+
+README.txt content:
+
+![README.txt content](https://i.imgur.com/cuAs0tQ.png)
+
+
+The README.txt file proved to be very useful, as it showed us the CMS' version to be 3.7. Searching for `Joomla 3.7 exploits`, it is possible to find the [CVE-2017-8917](https://www.exploit-db.com/exploits/42033). This will give us the elements to break in.
+
+Time to start attacking.
+
 
 ## **Step 3 : EXPLOITATION**
 
-> Rough explanation of what we will do. Do make sure to post a screenshot for every ### step here.
+During this step, I used the Joomblah python script and found credentials. Using these credentials, it is possible to access the /administrator folder and, from there, exploit the "preview" feature of templates in order to get a reverse shell.
 
 ### *Step 3.1*
 
