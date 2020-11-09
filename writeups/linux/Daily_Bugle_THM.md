@@ -22,22 +22,45 @@ Already, this box seems to be giving us great information. While we took notes o
 
 ## **Step 2 : SCANNING AND ENUMERATION**
 
+During this step, we find that the machine is running a webserver on which a CMS (Joomla! version 3.7.0) is running. We also find the /administrator dashboard (can't log in yet) on the webserver.
+
 ### *Nmap Output*
 
-> Nmap command + Nmap output
+I ran the following command: `nmap -A -T4 -p- -oN <output_name> -v <Target_IP>`. This is a classic full-range scan.
 
-### *PORT A - Service A*
+![Picture of the Nmap output](https://i.imgur.com/LKZYEQg.png)
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+### *PORT 22 - SSH*
 
-### *PORT B - Service B*
+While it is important to take note that the SSH service is running on the target machine, it usually isn't a way in on its own.
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+### *80 - HTTP*
 
-#### Substep 2.2.1
+This is the webserver we found during *Step 1 - Reconnaissance*. The Nmap results indicated to us it is running the **Joomla!** CMS and has disallowed entries in the **robots.txt** file.
 
-Sub-lorem
+#### A look at the website
 
+The elements that can be found "as is" on the websites are the following: a potential username (**Super User**) and a login form. Attempting to use SQL injections won't be of any help and we can't seem to be able bypass the login form.
+
+#### Robots.txt content
+
+This robots.txt file validates that the website is running the Joomla! CMS and gives us the location of a few interesting folders, especially the **/administrator** one.
+
+![Picture of the robots.txt file](https://i.imgur.com/fsKHuQF.png)
+
+#### Visiting the /administrator folder
+
+The /administrator folder prompts us to log in. SQL injections won't work here either. Even though we can't exploit it right now, this administrator panel will be our way in during *Step 3 - Exploitation*.
+
+![Picture of the /administrator folder](https://i.imgur.com/n7X9fgt.png)
+
+#### Running dirbuster and finding a Joomla! Version
+
+After exploring the obvious options, it is time to bust some directories.
+
+### *3306 - MySQL*
+
+We learn MySQL is running on the target machine.
 
 ## **Step 3 : EXPLOITATION**
 
