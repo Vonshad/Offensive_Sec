@@ -84,17 +84,47 @@ Time to start attacking.
 
 During this step, I used the Joomblah python script and found credentials. Using these credentials, it is possible to access the /administrator folder and, from there, exploit the "preview" feature of templates in order to get a reverse shell.
 
-### *Step 3.1*
+### *Exploiting CVE-2017-8917*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+As found in *Step 2 - Scanning & Enumeration*, this version of the Joomla! CMS is vulnerable to SQL Injections ([CVE-2017-8917](https://www.exploit-db.com/exploits/42033)). After digging around a little bit, I found a python script that would help with this exploitation: [Joomblah by NinjaJc01](https://github.com/NinjaJc01/joomblah-3).
 
-### *Step 3.2*
+#### Running the joomblah.py script
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+From running this script, we found a SQL table named **fb9j5_users** which contained a hash. We can also notice the presence of a couple of users, including the one we found during *Step 1 - Reconnaissance*: `Super User`.
 
-#### Substep 3.2.1
+![Joomblah.py results](https://i.imgur.com/Y9hQN5M.png)
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+### *Cracking the hash*
+
+Using [hashid.py](https://github.com/psypanda/hashID), we can guess that this is most likely a **bcrypt** hash (UNIX).
+
+Once the hash type was known, I switched to my host OS in order to crack the hash using my GPU. For my wordlist, I used the very popular rockyou.txt (more info about this wordlist [HERE](https://www.kaggle.com/wjburns/common-password-list-rockyoutxt)).
+
+![cracked hash and hashcat results](https://i.imgur.com/PqDarIL.png)
+
+**Bingo!** We have what seems to be a password.
+
+### *Logging in to the /administrator dashboard*
+
+Using a combination of usernames we found previously, it is possible to log in to the administrator dashboard. `jonah:spiderman123` worked for me.
+
+After logging in, we can notice we are actually logged in as `Super User`! Hurray us! 
+
+![We are Super User!](https://i.imgur.com/ZtFwByw.png)
+
+Now, onto finding a way to get a reverse shell.
+
+### Getting a reverse shell
+
+Now, this process is a bit tricky and took me a while (and a lot of trial/error). Here is the step-by-step:
+
+#### 1. Travel to the "Templates" section
+
+![Picture to illustrate the point](https://i.imgur.com/8lAjdUX.png)
+
+#### 2. Select the Beez3 Template
+
+
 
 
 ## **Step 4 : POST-EXPLOITATION**
