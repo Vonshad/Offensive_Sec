@@ -23,21 +23,18 @@ Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menan
 
 > Nmap command + Nmap output
 
-### *Open port 1*
+### *PORT A - Service A*
 
 Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
 
-### *Open port 2*
+### *PORT B - Service B*
 
 Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
 
-### *Open port 3*
-
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
-
-#### Substep 2.3.1
+#### Substep 2.2.1
 
 Sub-lorem
+
 
 ## **Step 3 : EXPLOITATION**
 
