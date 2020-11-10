@@ -92,7 +92,7 @@ As found in *Step 2 - Scanning & Enumeration*, this version of the Joomla! CMS i
 
 From running this script, we found a SQL table named **fb9j5_users** which contained a hash. We can also notice the presence of a couple of users, including the one we found during *Step 1 - Reconnaissance*: `Super User`.
 
-![Joomblah.py results](https://i.imgur.com/Y9hQN5M.png)
+![Joomblah.py results](https://i.imgur.com/acx4yUa.png)
 
 ### *Cracking the hash*
 
@@ -100,13 +100,13 @@ Using [hashid.py](https://github.com/psypanda/hashID), we can guess that this is
 
 Once the hash type was known, I switched to my host OS in order to crack the hash using my GPU. For my wordlist, I used the very popular rockyou.txt (more info about this wordlist [HERE](https://www.kaggle.com/wjburns/common-password-list-rockyoutxt)).
 
-![cracked hash and hashcat results](https://i.imgur.com/PqDarIL.png)
+![cracked hash and hashcat results](https://i.imgur.com/9J9WmwX.png)
 
 **Bingo!** We have what seems to be a password.
 
 ### *Logging in to the /administrator dashboard*
 
-Using a combination of usernames we found previously, it is possible to log in to the administrator dashboard. `jonah:spiderman123` worked for me.
+Using a combination of usernames we found previously, it is possible to log in to the administrator dashboard. The user "jonah" worked for me and the password is the cracked hash.
 
 After logging in, we can notice we are actually logged in as `Super User`! Hurray us! 
 
@@ -143,15 +143,23 @@ Once you click on `Template Preview`, you should get a connection on your netcat
 
 **We are in!**
 
-###
 
 ## **Step 4 : POST-EXPLOITATION**
 
-> In order to gain root access, .
+> In order to gain root access, we first take a look at credentials stored inside our website's configuration file. Now logged in as a normal user, we privesc to root by exploiting a sudo permission.
 
-### *Step 4.1*
+### *Upgrade our shell to a tty shell*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+In order to avoid annoyance at the later stages, I always upgrade our basic shell to a tty shell. This can be done using various [NetSec one-liners](https://netsec.ws/?p=337). I went for the python one and it worked fine. The only element I changed was the `/bin/sh` to a `/bin/bash` in order to get a bash shell.
+
+My command goes like this: `python -c 'import tty; pty.spawn("/bin/bash")'`
+
+![Illustrating the previous point](https://i.imgur.com/A9nTCFY.png)
+
+### *Finding users on the machine*
+
+Next, I enumerated through the users on the machine in order to see if jonah existed. We do find his user account (`jjameson`), but his password doesn't work.
+
 
 ### *Step 4.2*
 
