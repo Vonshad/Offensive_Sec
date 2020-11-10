@@ -22,11 +22,11 @@ Already, this box seems to be giving us great information. While it is important
 
 ## **Step 2 : SCANNING AND ENUMERATION**
 
-> Here, we find that the machine is running a webserver on which a CMS (Joomla! version 3.7.0) is running. We also find the /administrator dashboard (can't log in yet) on the webserver.
+> Here, we find that the machine is running a webserver on which a CMS (Joomla! version 3.7.0) is used. We also find the /administrator dashboard (can't log in yet) on the webserver.
 
 ### *Nmap Output*
 
-I ran the following command: `nmap -A -T4 -p- -oN <output_name> -v <Target_IP>`. This is a classic full-range scan.
+I ran the following scan: `nmap -A -T4 -p- -oN <output_name> -v <Target_IP>`. This is a classic full-range scan.
 
 ![Picture of the Nmap output](https://i.imgur.com/LKZYEQg.png)
 
@@ -40,11 +40,11 @@ We learn MySQL is running on the target machine. We could potentially learn cruc
 
 ### *Port 80 - HTTP*
 
-This is the webserver we found during *Step 1 - Reconnaissance*. The Nmap results indicated to us it is running the **Joomla!** CMS and has disallowed entries in the **robots.txt** file.
+This is the webserver we found during *Step 1 - Reconnaissance*. The Nmap results indicated it is running the **Joomla!** CMS and has disallowed entries in the **robots.txt** file.
 
-#### A look at the website
+#### A glance at the website
 
-The elements that can be found "as is" on the websites are the following: a potential username (**Super User**) and a login form. Attempting to use SQL injections won't be of any help and we can't seem to be able bypass the login form.
+The elements that can be found "as is" on the website are the following: a potential username (`Super User`) and a login form. Attempting to use SQL injections won't be of any help and we can't seem to be able bypass the login form.
 
 #### Robots.txt content
 
@@ -54,13 +54,13 @@ This robots.txt file validates that the website is running the Joomla! CMS and g
 
 #### Visiting the /administrator folder
 
-The /administrator folder prompts us to log in. SQL injections won't work here either. Even though we can't exploit it right now, this administrator panel will be our way in during *Step 3 - Exploitation*.
+The /administrator folder prompts us to log in. SQL injections won't work here either. Even though we access it right now, this administrator panel will be our way in during *Step 3 - Exploitation*.
 
 ![Picture of the /administrator folder](https://i.imgur.com/n7X9fgt.png)
 
 #### Running DirBuster to find new elements
 
-After exploring the obvious options, it is time to bust some directories. At that point, I was mostly trying to find a CMS version in order to find exploits.
+After exploring the obvious options, it is time to bust some directories. At this point, I was mostly trying to find a CMS version in order to find exploits.
 
 I used the **directory-list-2.3-medium.txt** wordlist and included **.php** and **.txt** files to the search. These were the results:
 
@@ -75,7 +75,7 @@ README.txt content:
 ![README.txt content](https://i.imgur.com/cuAs0tQ.png)
 
 
-The README.txt file proved to be very useful, as it showed us the CMS' version to be 3.7. Searching for `Joomla 3.7 exploits`, it is possible to find the [CVE-2017-8917](https://www.exploit-db.com/exploits/42033). This will give us the elements to break in.
+The README.txt file proved to be very useful, as it told us the CMS version is 3.7. Searching for `Joomla 3.7 exploits`, it is possible to find the [CVE-2017-8917](https://www.exploit-db.com/exploits/42033). This will give us the information needed to break in.
 
 Time to start attacking.
 
@@ -90,7 +90,7 @@ As found in *Step 2 - Scanning & Enumeration*, this version of the Joomla! CMS i
 
 #### Running the joomblah.py script
 
-From running this script, we found a SQL table named **fb9j5_users** which contained a hash. We can also notice the presence of a couple of users, including the one we found during *Step 1 - Reconnaissance*: `Super User`.
+From running this script, we found a SQL table named **fb9j5_users** which contained a hash. We can also notice it contains a few usernames, including the one we found during *Step 1 - Reconnaissance*: `Super User`. However, and most interestingly, it also contains a hash which could potentially be used as a password.
 
 ![Joomblah.py results](https://i.imgur.com/acx4yUa.png)
 
@@ -106,7 +106,7 @@ Once the hash type was known, I switched to my host OS in order to crack the has
 
 ### *Logging in to the /administrator dashboard*
 
-Using a combination of usernames we found previously, it is possible to log in to the administrator dashboard. The user "jonah" worked for me and the password is the cracked hash.
+Using a combination of usernames we found previously, it is possible to log in to the administrator dashboard. The user `jonah` worked for me and the password is the cracked hash.
 
 After logging in, we can notice we are actually logged in as `Super User`! Hurray us! 
 
@@ -116,13 +116,13 @@ Now, onto finding a way to get a reverse shell.
 
 ### Getting a reverse shell
 
-Now, this process is a bit tricky and took me a while (and a lot of trial/error). Here is the step-by-step:
+Now, this process is a bit tricky and took me a while (and a lot of trial and error). Here is the step-by-step:
 
 #### 1. Pre-exploitation
 
-Get a php reverse shell. I personally like [this one from pentest monkey](https://github.com/pentestmonkey/php-reverse-shell). Get the file and edit the LHOST and LPORT and put in your own.
+Get a php reverse shell. I personally like [this one from Pentestmonkey](https://github.com/pentestmonkey/php-reverse-shell). Get the file and edit the LHOST and LPORT and put in your own.
 
-Next, start a netcat listener to your chosen port. `nc -nvlp <LPORT>`
+Next, start a netcat listener to your chosen port: `nc -nvlp <LPORT>`
 
 #### 2. Travel to the "Templates" section
 
@@ -133,7 +133,7 @@ Next, start a netcat listener to your chosen port. `nc -nvlp <LPORT>`
 ![Picture to illustrate the point](https://i.imgur.com/v7UuDWp.png)
 
 
-#### 4. Edit the index.php file with your php reverse shell code and preview the template to start the reverse shell 
+#### 4. Replace the index.php file code with your php reverse shell code and preview the template to start the reverse shell 
 
 ![Steps to get the rev shell](https://i.imgur.com/eKwsouA.png)
 
@@ -162,9 +162,9 @@ Next, I enumerated through the users on the machine in order to see if jonah exi
 
 ![Users on the machine](https://i.imgur.com/THSKs5X.png)
 
-#### *Finding user jjameson's password inside the website's configuration file
+#### Finding user jjameson's password inside the website's configuration file
 
-After enumerating a little, I checked the **configuration.php** file inside the `/var/www/html/` folder. We find what seems to be the "root" password. While this password did not work for the root user, it worked for jjameson!
+After enumerating a little, I checked the **configuration.php** file inside the `/var/www/html/` folder. We find what seems to be the "root" password. While this password did not work for the root user, it worked for `jjameson`!
 
 ![Finding a password inside the configuration.php](https://i.imgur.com/kcmBAlr.png)
 
@@ -227,7 +227,7 @@ Once this is done, we can see we are root!
 
 This box was an interesting one and my hardest one to date (rating wise). My main takeaway was that obvious hints may not be hints after all (`Super User` user and the index.php login form). 
 
-This challenge has also helped develop my CMS methodology, mainly by reminding me to always hunt for versions in order to have an idea of how and what to attack. I spent way too much time trying to find a way in using SQLi while all I had to do was re-read my dirbuster results, go check out the README.txt, and use a tool against this CMS' version. This comes back to the old saying which goes like this: *"Enumerate, enumerate, enumerate. Once you're done enumerating, enumerate again."*
+This challenge has also helped develop my CMS methodology, mainly by reminding me to always hunt for versions in order to have an idea of how and what to attack. I spent way too much time trying to find a way in using SQLi when all I had to do was re-read my dirbuster results, go check out the README.txt, and use a tool against this CMS' version. This comes back to the old saying which goes like this: *"Enumerate, enumerate, and enumerate. Once you're done enumerating, enumerate again."*
 
 
 # **That's it for now. Thank you for reading this write-up! :)**
