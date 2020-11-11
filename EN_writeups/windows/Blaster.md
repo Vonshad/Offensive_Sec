@@ -2,23 +2,23 @@
 
 ![](https://i.imgur.com/sjlFQ4w.png)
 
-*Plateform* - [**TryHackMe**](https://tryhackme.com/room/blaster)
+*Platform* - [**TryHackMe**](https://tryhackme.com/room/blaster)
 
 *OS* - **Windows**
 
 *Rating* - **Easy**
 
-*I am Khan*
+*The Oasis isn't as awesome as you may think.*
 
 ## **Step 1 : RECONNAISSANCE**
 
 ### *General information*
 
-There isn't much information we can get at this point. However, the box's description indicates it is a Windows machine.
+There isn't much information we can get at this point. However, the box's description indicates it is a Windows machine, which is always good to know.
 
 ## **Step 2 : SCANNING AND ENUMERATION**
 
-> At this step, we take a look at a hidden directory on the web server. From this directory, we find a set of credentials that we will use at step 3.
+> At this step, we will take a look at a hidden directory hosted on the web server. From this directory, we will find a set of credentials that will be used at step 3.
 
 ### *Nmap Output*
 
@@ -26,7 +26,7 @@ I ran a very standard scan: `nmap -A -T4 -p- -oN <output> -v blaster.thm`
 
 ![nmap output](https://i.imgur.com/GEFba6w.png)
 
-We have a lot of results. It would not be efficient to list everything as its own section, so I will focus on the main ports of interest: port 3389 and port 80.
+Since we have a lot of results, I don't believe it would not be efficient to list everything as its own section. I will focus on the main ports of interest for this write-up: port 3389 and port 80.
 
 ### *PORT 3389 - RDP*
 
@@ -36,7 +36,7 @@ Similar to SSH on the Linux side, RDP is not usually a way in on its own. Howeve
 
 #### A look at the website
 
-Traveling to the web server, we can believe, at first glance, that nothing interesting is here. The IP address simply leads to a default IIS Windows Server page.
+Traveling to the web server, we see that nothing of interest is here. We are simply led to a default IIS Windows Server page.
 
 ![Default IIS page](https://i.imgur.com/AbL5HXN.png)
 
@@ -48,19 +48,21 @@ The next step in our enumeration process is to see if there's anything else on t
 
 #### Enumerating the /retro directory
 
-This directory seems to be where the website is hosted. We see an old-fashioned style of website (read: retro) which is quite appealing.
+This directory seems to be where the "real" website is hosted. We see an old-fashioned style of website (read: a **blast** from the past) that is quite appealing.
 
-Already we get a potential username from reading the author of the topmost blog post: User `Wade`.
+Already we get a potential username from reading the author of the top-most blog post: `Wade`.
 
 ![Discovery of a potential user : Wade](https://i.imgur.com/DcSecAG.png)
 
-If we scroll down to the 2nd ever blog post, we discover a potential password :
+If we scroll down to the second ever blog post, we see the blog owner describing login issues :
 
 ![Discovery of a potential password : parzival](https://i.imgur.com/A15OPrq.png)
 
-After a quick Google search (because my movie culture is clearly lacking), we get a name: `parzival`. If we put this information in the blog post's context, this seems to be a password.
+If we put this information in the blog post's context, this seems to be describing a password. After a quick Google search (because my movie culture is clearly lacking), we get a name: `parzival`.
 
-We now have credentials : `Wade:perzival`
+We now have credentials : `Wade:parzival`
+
+Let's start attacking!
 
 
 ## **Step 3 : EXPLOITATION**
@@ -75,7 +77,7 @@ Remember the RDP service hosted on port 3389 we covered in *Step 2 - Scanning & 
 
 As it was the recommended way, I chose to use `remmina` to remotely connect to the machine.
 
-First, get it installed : `apt install remmina`.
+First, get it installed : `apt install remmina`
 
 Next, start it by typing `remmina` in your console.
 
@@ -93,7 +95,7 @@ That's it! We are now connected to the machine as user `Wade`! We didn't end up 
 
 ## **Step 4 : POST-EXPLOITATION**
 
-> After exploiting an interesting privesc method using a badly hidden file and cheating a little bit, we will be NT Authority\System !
+> After exploiting an interesting privesc method we found from a badly hidden file, we will be NT Authority\System !
 
 ### *Enumerating the Wade user*
 
@@ -101,11 +103,11 @@ After seeing the Desktop screenshot in the previous step, I am sure you have a b
 
 ![What's inside the recycle bin?](https://i.imgur.com/jf6k3wK.png)
 
-Disappointed? I hope not! If we google `hhupd.exe exploit`, we can quickly find this is referring the [CVE-2019-1388](https://nvd.nist.gov/vuln/detail/CVE-2019-1388) which is a "Windows Certificate Dialog Elevation of Privilege Vulnerability".
+Disappointed? I hope not! If we google `hhupd.exe exploit`, we find this is referring to the [CVE-2019-1388](https://nvd.nist.gov/vuln/detail/CVE-2019-1388) exploit, which is a "*Windows Certificate Dialog Elevation of Privilege Vulnerability*".
 
-### *Getting root using CVE-2019-1388*
+### *Getting admin using CVE-2019-1388*
 
-In order to privesc using what we've learned, I followed along [Zero Day Initiative's video](https://www.youtube.com/watch?v=3BQKpPNlTSo) on the matter. He provides a very detailed step-by-step guide. 
+In order to privesc using what we've learned, I followed along [Zero Day Initiative's video](https://www.youtube.com/watch?v=3BQKpPNlTSo) covering the exploit. He provides a very detailed step-by-step guide. 
 
 Here is how it goes.
 
@@ -129,7 +131,7 @@ Here is how it goes.
 
 ![Clicking on the CA](https://i.imgur.com/Wq1JnNl.png)
 
-Once you've clicked on it, simply click "OK" at the bottom.
+Once you've clicked on it, simply click "OK" at the bottom to close this window.
 
 #### 6. Close the admin prompt
 
@@ -137,9 +139,9 @@ Once you've clicked on it, simply click "OK" at the bottom.
 
 We should now have a web page opened on the desktop. This is a key element, as this **webpage was opened as admin**.
 
-#### 7. Open an explorer window by "saving the page"
+#### 7. Open an explorer window by "saving the file"
 
-!["Saving the page" to open an explorer](https://i.imgur.com/BCTmHRs.png)
+!["Saving the file" to open an explorer](https://i.imgur.com/BCTmHRs.png)
 
 #### 8. Travel to the System32 folder using the explorer
 
@@ -161,7 +163,7 @@ Once you press "save", you should be inside System32.
 
 ## **SUMMARY**
 
-This box was special, because it was the first box I've done that would make us remotely connect to an actual desktop - not to a CLI. The fact this box leads us to a GUI changes how we should perceive post-exploitation enumeration. "Think like a user" -- Check the bin, check the internet history, check the logged accounts in the web browser, etc.
+This box was special, because it was the first box I've done that makes us remotely connect to an actual desktop - not to a CLI. The fact this box leads us to a GUI should change how we perceive post-exploitation enumeration. "Think like a user" -- Check the bin, check the internet history, check the logged accounts in the web browser, etc.
 
 This was a very nice box.
 
