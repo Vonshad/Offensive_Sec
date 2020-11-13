@@ -2,26 +2,26 @@
 
 ![Box picture](https://i.imgur.com/i7D1DSf.png)
 
-*Plateform* - [**HackTheBox.eu**](https://www.hackthebox.eu/home/machines/profile/5)
+*Plateform* - [**HackTheBox**](https://www.hackthebox.eu/home/machines/profile/5)
 
 *OS* - **Linux**
 
 *Rating* - **Medium**
 
-*Sadly not a road runner themed box.*
+*Sadly not a Road Runner themed box.*
 
 ## **Step 1 : RECONNAISSANCE**
 
 ### *Reading the box description*
 
-From the reading the box description, we learn this is a Linux machine and that we will most likely focus on CVE research.
+From reading the box description, we learn this is a Linux machine and that we will most likely focus on CVE research.
 
 ![Reconnaissance on HTB](https://i.imgur.com/2Ltzq9a.png)
 
 
 ## **Step 2 : SCANNING AND ENUMERATION**
 
-> At this stage, we get overwhelmed with the amount of ports opened. Lucky us, only two ports need to be considered. We enumerate an Elastix installation and find an awesome exploit. 
+> At this stage, we get busy with the amount of ports opened on the machine. Lucky for us, only two ports need to be considered for this write-up. We enumerate an Elastix installation and find an awesome exploit. 
 
 ### *Nmap Output*
 
@@ -29,15 +29,15 @@ The nmap scan was a standard full-range scan. Nmap command: `nmap -sC -sV -oN <o
 
 ![Nmap output](https://i.imgur.com/g4GylIa.png)
 
-What a mess! Luckily, our pentest will focus on two main ports: port 22 and port 443.
+That's a lot of ports for a CTF machine! Luckily, our pentest will focus only on port 22 and port 443.
 
 ### *PORT 22 - SSH*
 
-While it is important to take a note that SSH is running on the machine, it usually isn't a way in on its own. However, if we find credentials, this could be a way in (*foreshadowing*).
+While it is important to take note that SSH is running on the machine, it usually isn't a way in on its own. However, if we find credentials, this could be a way in (*foreshadowing*).
 
 ### *PORT 443 - HTTPS*
 
-Traveling to `https://beep.thm`, we get greeted by an [Elastix](https://www.elastix.org/) login prompt.
+Traveling to `https://beep.thm`, we are greeted by an [Elastix](https://www.elastix.org/) login prompt.
 
 ![Elastix login prompt](https://i.imgur.com/KtpfoH2.png)
 
@@ -45,7 +45,7 @@ Traveling to `https://beep.thm`, we get greeted by an [Elastix](https://www.elas
 
 ![DirBuster results](https://i.imgur.com/eSBGxAy.png)
 
-Two results seem to be the most interesting: **/configs/** and **/admin/**. While I enumerated all of the folders, none of them will prove useful in the actual exploitation part. Still, I wanted to leave this part in as I believe it is a default section that needs to be left in.
+Two results seem to be the most interesting: **/configs/** and **/admin/**. While I enumerated all of the directories, none of them will prove useful in the actual exploitation part. Still, I wanted to leave this part in the write-up as I believe it is a default section that needs to be left in.
 
 #### Finding an exploit for the Elastix software
 
@@ -61,7 +61,7 @@ The one we will be interested in is the LFI exploit (Local File Inclusion). This
 
 ##### Trying the LFI exploit and getting credentials
 
-The exploit mentions we need **Elastix 2.2.0**. However, I didn't find a version confirmation previously. Still, I decided to take a chance as it was a simple URL change I had to make. Lucky for us, we won the jackpot and got a response:
+The exploit mentions we need **Elastix v.2.2.0**. However, I didn't find a version confirmation previously. Nevertheless, I decided to take a chance as it was a simple URL change I had to make and wouldn't make us waste a lot of time if it didn't work. Lucky for us, we won the jackpot and got a response:
 
 ![Response](https://i.imgur.com/T5Om7f8.png)
 
@@ -75,23 +75,23 @@ Bingo! We have credentials! While we can use these credentials to log in to the 
 
 #### Finding users on the machine using the same exploit
 
-Now that we know we can get file disclosures using this exploit, why not try to find which users are on the machine? By doing so, we will get usable SSH usernames.
+Now that we know we can get file disclosures using this exploit, why not try to find users on the machine? By doing so, we will get usable SSH usernames.
 
-In order to get usernames, we want to read the **/etc/passwd** file on the machine. To do so, we simply have to modify our URL to specify its location. See below.
+In order to get usernames, we want to read the **/etc/passwd** file on the machine. To do so, all we have to do is modify our URL to specify the file location. See below.
 
 ![Getting machine users](https://i.imgur.com/1BDfrsF.png)
 
-We now have two "real" usernames: `root` and `fanis`.
+We now have two usernames that are present on the actual machine: `root` and `fanis`.
 
 Let's move on to exploitation.
 
 ## **Step 3 : EXPLOITATION**
 
-> Using a previously found username and password combo, we attempt to SSH into the machine and make a very surprising discovery.
+> Using a previously found username and password, we attempt to SSH into the machine and we make a very surprising discovery.
 
 ### *Attempting to SSH into the machine*
 
-Remember port 22, a.k.a. the one we barely covered? It is now its time to shine. 
+Remember port 22; the one we barely covered? It is now its time to shine. 
 
 The password we found was the password of the `admin` user. Could this password be the same one the `root` user is using? Let's try!
 
@@ -103,7 +103,7 @@ Go! *Heart is pumping.*
 
 ![Failed SSH attempt](https://i.imgur.com/63sgzu1.png)
 
-Disappointing. Let's try doing what they ask us to do.
+An ***error***? Disappointing. Let's try doing what it asks us to do.
 
 *Get back up, reload, and go again.*
 
@@ -113,12 +113,15 @@ Disappointing. Let's try doing what they ask us to do.
 
 Here is the final command: `ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 root@10.10.10.7`
 
-**We are in! Not only that, we are in *AS ROOT***.
+**We are in! Not only are we in the machine, we are in *AS ROOT***.
 
+**PWNED!**
 
 ## **SUMMARY AND LESSONS LEARNED**
 
-I definitely learned a lot doing this box and fell in some rabbit holes (especially the admin dashboard -- I probably missed something there (looking at you Asterisk CLI), but it didn't stop me from rooting the box). I learned to take my team and read through the documentation: I actually spotted the LFI exploit, but ditched it because I didn't take the time to really consider it. This box, like so many others, gave me the same reminder: take your time. This is a marathon, not a race. Read through your documentation and exploits and it will work. The enumeration process proves to be the most important, as it is the basis for your exploitation.
+I definitely learned a lot doing this box and fell in some rabbit holes along the way (especially the admin dashboard -- I probably missed something there (looking at you Asterisk CLI), but it didn't stop me from rooting the box). 
+
+I learned to take my time and read through the documentation: I actually found the LFI exploit a first time, but ditched it because I didn't take the time to really understand it. This box, like so many others, gave me the following reminder: **take your time. This is a marathon, not a race.** Once again, the enumeration process proves to be the most valuable, as it is the basis for your exploitation.
 
 All in all, a very interesting and fast box once you know where you are going with it.
 
