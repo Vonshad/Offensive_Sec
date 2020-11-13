@@ -1,79 +1,131 @@
-# **Box Name**
+# **Beep**
 
-> Box picture goes here
+![Box picture](https://i.imgur.com/i7D1DSf.png)
 
-*Plateform* - [**Platform with a link**](www.google.com)
+*Plateform* - [**HackTheBox.eu**](https://www.hackthebox.eu/home/machines/profile/5)
 
-*OS* - **OS**
+*OS* - **Linux**
 
-*Rating* - **RATING**
+*Rating* - **Medium**
 
-*Quote*
+*Sadly not a road runner themed box.*
 
 ## **Step 1 : RECONNAISSANCE**
 
-### *Step 1.1*
+### *Reading the box description*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+From the reading the box description, we learn this is a Linux machine and that we will most likely focus on CVE research.
+
+![Reconnaissance on HTB](https://i.imgur.com/2Ltzq9a.png)
 
 
 ## **Step 2 : SCANNING AND ENUMERATION**
 
+> At this stage, we get overwhelmed with the amount of ports opened. Lucky us, only two ports need to be considered. We enumerate an Elastix installation and find an awesome exploit. 
+
 ### *Nmap Output*
 
-> Nmap command + Nmap output
+The nmap scan was a standard full-range scan. Nmap command: `nmap -sC -sV -oN <output_name> -v beep.htb`
 
-### *PORT A - Service A*
+![Nmap output](https://i.imgur.com/g4GylIa.png)
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+What a mess! Luckily, our pentest will focus on two main ports: port 22 and port 443.
 
-### *PORT B - Service B*
+### *PORT 22 - SSH*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+While it is important to take a note that SSH is running on the machine, it usually isn't a way in on its own. However, if we find credentials, this could be a way in (*foreshadowing*).
 
-#### Substep 2.2.1
+### *PORT 443 - HTTPS*
 
-Sub-lorem
+Traveling to `https://beep.thm`, we get greeted by an [Elastix](https://www.elastix.org/) login prompt.
 
+![Elastix login prompt](https://i.imgur.com/KtpfoH2.png)
+
+#### Using DirBuster to find hidden directories
+
+![DirBuster results](https://i.imgur.com/eSBGxAy.png)
+
+Two results seem to be the most interesting: **/configs/** and **/admin/**. While I enumerated all of the folders, none of them will prove useful in the actual exploitation part. Still, I wanted to leave this part in as I believe it is a default section that needs to be left in.
+
+#### Finding an exploit for the Elastix software
+
+##### Using Searchsploit
+
+Using searchsploit, we get a couple of hits for the Elastix software.
+
+![Searchsploit results](https://i.imgur.com/8mzDldQ.png)
+
+The one we will be interested in is the LFI exploit (Local File Inclusion). This LFI can be found on [ExploitDB](https://www.exploit-db.com/exploits/37637) if you are curious.
+
+![LFI picture](https://i.imgur.com/8bu6pww.png)
+
+##### Trying the LFI exploit and getting credentials
+
+The exploit mentions we need **Elastix 2.2.0**. However, I didn't find a version confirmation previously. Still, I decided to take a chance as it was a simple URL change I had to make. Lucky for us, we won the jackpot and got a response:
+
+![Response](https://i.imgur.com/T5Om7f8.png)
+
+What an interesting page! Can't you see all the info it leaks? No? All right, let's make it prettier by doing `Right-click --> View Source`.
+
+![Better Response](https://i.imgur.com/1OWSczr.png)
+
+> I chose to hide the password, as it is the key to the whole box. You'll see.
+
+Bingo! We have credentials! While we can use these credentials to log in to the **/admin/** dashboard, this box is actually much easier than that.
+
+#### Finding users on the machine using the same exploit
+
+Now that we know we can get file disclosures using this exploit, why not try to find which users are on the machine? By doing so, we will get usable SSH usernames.
+
+In order to get usernames, we want to read the **/etc/passwd** file on the machine. To do so, we simply have to modify our URL to specify its location. See below.
+
+![Getting machine users](https://i.imgur.com/1BDfrsF.png)
+
+We now have two "real" usernames: `root` and `fanis`.
+
+Let's move on to exploitation.
 
 ## **Step 3 : EXPLOITATION**
 
-> Rough explanation of what we will do. Do make sure to post a screenshot for every ### step here.
+> Using a previously found username and password combo, we attempt to SSH into the machine and make a very surprising discovery.
 
-### *Step 3.1*
+### *Attempting to SSH into the machine*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+Remember port 22, a.k.a. the one we barely covered? It is now its time to shine. 
 
-### *Step 3.2*
+The password we found was the password of the `admin` user. Could this password be the same one the `root` user is using? Let's try!
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+Ready? *This could be it.*
 
-#### Substep 3.2.1
+Set? *Imagine if we log in as root and win this thing!*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+Go! *Heart is pumping.*
 
+![Failed SSH attempt](https://i.imgur.com/63sgzu1.png)
 
-## **Step 4 : POST-EXPLOITATION**
+Disappointing. Let's try doing what they ask us to do.
 
-> Rough explanation of what we will do. Do make sure to post a screenshot for every ### step here.
+*Get back up, reload, and go again.*
 
-### *Step 4.1*
+*Fire!*
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+![Successful SSH attempt](https://i.imgur.com/5gKgK0h.png)
 
-### *Step 4.2*
+Here is the final command: `ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 root@10.10.10.7`
 
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
-
-#### Substep 4.2.1
-
-Lorem ipsum dolor sit amet, ex soleat dicunt consectetuer quo, qui id unum menandri, nec in minim laoreet indoctum. Mea insolens recusabo an, quo eu erant definitiones. Has nullam putant phaedrum ei. Qui ei pertinacia consequuntur reprehendunt. Ad vix homero placerat inciderint, ad quod justo luptatum sit.
+**We are in! Not only that, we are in *AS ROOT***.
 
 
-## **SUMMARY**
+## **SUMMARY AND LESSONS LEARNED**
 
-> Summary of the box with main take aways
+I definitely learned a lot doing this box and fell in some rabbit holes (especially the admin dashboard -- I probably missed something there (looking at you Asterisk CLI), but it didn't stop me from rooting the box). I learned to take my team and read through the documentation: I actually spotted the LFI exploit, but ditched it because I didn't take the time to really consider it. This box, like so many others, gave me the same reminder: take your time. This is a marathon, not a race. Read through your documentation and exploits and it will work. The enumeration process proves to be the most important, as it is the basis for your exploitation.
 
-# **That's it for now. Thank you for reading this write-up!**
+All in all, a very interesting and fast box once you know where you are going with it.
+
+Bad joke of the day: *Maybe the true reason the box is named **Beep** is because, in the end, it was built with the Road Runner's image in mind?*
+
+![Not so funny joke](https://i.imgur.com/tqMqpHT.png)
+
+# **That's it for now. Thank you for reading this write-up! :)**
 
 ### **Vonshad**
