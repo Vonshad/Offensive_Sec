@@ -51,21 +51,21 @@ The first thing we can learn from this page is that it is running Pi-hole v.3.1.
 
 ![Searchsploit results for Pi-hole](https://i.imgur.com/aqNqBqh.png)
 
-However, we can notice everything that would be of interest to us requires us to be authenticated. Let's go another way and run **DirBuster**.
+However, we can notice that everything that could be of interest to us requires us to be authenticated before we can use it. Let's go another way and run **DirBuster**.
 
 #### Running DirBuster
 
-Running DirBuster almost always is a great idea. DirBuster allows us to find hidden directories and could thus lead to incredible findings. Here are the results for this page:
+Running DirBuster is almost always a great idea. DirBuster allows us to find hidden directories, thus could lead us to incredible findings. Here are the results we got:
 
 ![DirBuster results](https://i.imgur.com/gL3p3df.png)
 
-An admin directory! Interesting, let's peek at it.
+An admin directory! Interesting, let's take a look.
 
 #### Visiting the /admin/ directory
 
 ![/admin/ directory](https://i.imgur.com/B9OiY7c.png)
 
-We are able to view the dashboard. Most importantly, we see a login page on the left. 
+We are able to view the pi-hole dashboard. Most importantly, we see a login page on the left. 
 
 If we access it, we get a login prompt.
 
@@ -81,11 +81,11 @@ Now we are talking! We have a set of default crendials ***AND*** we can use them
 
 ## **Step 3 : EXPLOITATION**
 
-> Using the newly found credentials, we SSH in the machine and snag the user flag.
+> Using the newly found credentials, we SSH in the machine.
 
 ### *Using SSH to get in the machine*
 
-Now, there is no real way to justify such a lack of security. Being able to just SSH into a machine using default credentials is, plainly put, very bad. However, we aren't blue team today, so we should be very happy about this little gift.
+Now, there is no real way to justify such a lack of security. Being able to simply SSH into a machine using default credentials is, plainly put, very bad. However, we aren't blue team today, so we should be very happy about this little gift.
 
 Let's try getting in the machine.
 
@@ -98,11 +98,11 @@ Simple, wasn't it? We are now connected as user `pi` and are a full user!
 
 ## **Step 4 : POST-EXPLOITATION**
 
-> To privesc, we will do basic enumeration and realize we can abuse Sudo in order to gain root. The root flag, however, proves to be trickier to get.
+> To privesc, we will do basic enumeration and realize we can abuse Sudo in order to gain root. We also work to get our flags.
 
 ### *Getting the user.txt flag*
 
-While I don't normally provide flags, this box gets tricky with them (the **root.txt** flag), so I decided I would include them in this write-up. First off, let's get the **user.txt** flag. This flag is located in `/home/pi/Desktop`.
+While I don't normally provide flags in write-ups, this box gets tricky with the **root.txt** flag, so I decided I would include them in this write-up. First off, let's get the **user.txt** flag. This flag is located in `/home/pi/Desktop/`.
 
 ![user.txt flag](https://i.imgur.com/SqV4Jhf.png)
 
@@ -110,7 +110,7 @@ While I don't normally provide flags, this box gets tricky with them (the **root
 
 Once we have the **user.txt** flag, we will focus on trying to find a way to privilege escalate to root.
 
-#### Basic enumeration of the* `pi` user
+#### Basic enumeration of the `pi` user
 
 Running basic commands for privilege escalation (see my [cheatsheet](https://github.com/Vonshad/Offensive_Sec/blob/main/Linux-PrivEsc-cheatsheet.md) if you want ;) ), we will run `sudo -l` at some point.
 
@@ -124,7 +124,7 @@ Using the `sudo` privileges we have, we can get root a thousand different ways. 
 
 ![Getting root](https://i.imgur.com/0vwQ1TA.png)
 
-Just like that, we are admin of the system. However, before we can call it a day, we still need to get the root flag.
+Just like that, we are the root user. However, before we can call it a day, we need to get the root flag.
 
 ### *Getting the root.txt flag*
 
@@ -144,7 +144,7 @@ USB sticks will be in the `/media/` folder. In order to see what's in it, I ran 
 
 ![Content of /media/](https://i.imgur.com/zQafrvd.png)
 
-All right, we are getting somewhere! What is on `/media/usbstick/` now?
+All right, we are getting somewhere! What is on `/media/usbstick/`?
 
 ![Content of /media/usbstick/](https://i.imgur.com/gfd7ABm.png)
 
@@ -166,9 +166,9 @@ Run: `cat /dev/sdb`
 
 ![/dev/sdb content](https://i.imgur.com/mEeFELP.png)
 
-Not very user-friendly this file, isn't it? While we did find the flag, it definitely isn't the cleanest way of retrieving it.
+This file is not very user-friendly, isn't it? While we did find the flag, it definitely isn't the cleanest way of retrieving it.
 
-Using the `strings` command, we will get a cleaner output. `strings` will look through binary data in order to find human-readable text and will then output it.
+Using the `strings` command, we will get a cleaner output. `strings` will look through binary data in order to find human-readable text and will output it to the terminal.
 
 Let's run it: `strings /dev/sdb`
 
@@ -182,7 +182,7 @@ That's it! We now have the flag and it is much cleaner.
 
 While this box was easy, I guess we can take it as a warning about our minimally protected IoT devices. I strongly encourage you to read about the Mirai botnet or listen to [Jack Rhysider's Darknet Diaries episode on internet exposed objects](https://darknetdiaries.com/episode/31/). In this episode, Jack Rhysider and his guest discusses hacks on printers, Chromecasts, and more.
 
-Furthermore, this box forced us to look at ways to recover a deleted file on a USB stick, which was a very nice way of challenging us to gain the root flag.
+Furthermore, this box forced us to look at ways to recover a deleted file from a USB stick, which was a very nice way of challenging us before giving the root flag.
 
 All in all, an easy box but one that proves to be interesting and forced us out of our usual comfort zones regarding flags.
 
