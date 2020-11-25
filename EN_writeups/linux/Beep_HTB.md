@@ -1,6 +1,6 @@
 # **Beep**
 
-![Box picture](https://i.imgur.com/i7D1DSf.png)
+![Box picture](https://i.imgur.com/C9JiJMU.png)
 
 *Plateform* - [**HackTheBox**](https://www.hackthebox.eu/home/machines/profile/5)
 
